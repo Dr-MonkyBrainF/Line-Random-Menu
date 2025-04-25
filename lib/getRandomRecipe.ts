@@ -20,15 +20,9 @@ interface Category {
     
     // categoriesの型を明示的に指定
     const categories: Category[] = catJson.result.small;
-    
-    // 有効なカテゴリのみを抽出
-    const validCategories = categories.filter(category => category.categoryId > 0);
-    
-    if (validCategories.length === 0) {
-      throw new Error("有効なカテゴリIDがありません");
-    }
   
-    const randomCat = validCategories[Math.floor(Math.random() * validCategories.length)];
+    // ランダムにカテゴリを選択
+    const randomCat = categories[Math.floor(Math.random() * categories.length)];
     
     const rankingRes = await fetch(
       `https://app.rakuten.co.jp/services/api/Recipe/CategoryRanking/20170426?applicationId=${APP_ID}&categoryId=${randomCat.categoryId}`
@@ -49,5 +43,5 @@ interface Category {
       title: randomRecipe.recipeTitle,
       url: randomRecipe.recipeUrl,
     };
-  }
+  }  
   
