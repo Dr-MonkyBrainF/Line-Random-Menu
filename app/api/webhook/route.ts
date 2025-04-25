@@ -27,6 +27,12 @@ async function getRandomRecipe() {
   const recipes = rankingJson.result;
   const randomRecipe = recipes[Math.floor(Math.random() * recipes.length)];
 
+  //エラー用コンソールログ
+  console.log("カテゴリ取得レスポンス:", JSON.stringify(catJson, null, 2));
+  console.log("選ばれたカテゴリ:", randomCat);
+  console.log("レシピ取得レスポンス:", JSON.stringify(rankingJson, null, 2));
+
+
   return {
     title: randomRecipe.recipeTitle,
     url: randomRecipe.recipeUrl,
