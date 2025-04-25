@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
           messages: [
             {
               type: "text",
-              text: `今日のおすすめレシピ：\n${title}\n${url}`,
+              text: `おすすめレシピ：\n${title}\n${url}`,
             },
           ],
         };
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
           messages: [
             {
               type: "text",
-              text: "レシピの取得に失敗しました💦",
+              text: "レシピの取得に失敗しました",
             },
           ],
         };
