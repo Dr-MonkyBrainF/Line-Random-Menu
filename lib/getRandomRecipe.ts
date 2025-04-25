@@ -8,6 +8,7 @@ interface Category {
   export default async function getRandomRecipe() {
     const APP_ID = process.env.RAKUTEN_APP_ID!;
     
+    // カテゴリ一覧を取得
     const catRes = await fetch(`https://app.rakuten.co.jp/services/api/Recipe/CategoryList/20170426?applicationId=${APP_ID}`);
     const catJson = await catRes.json();
     
@@ -18,12 +19,14 @@ interface Category {
       throw new Error("カテゴリ取得失敗");
     }
     
-    // categoriesの型を明示的に指定
+    // 有効なカテゴリIDをフィルタリング
     const categories: Category[] = catJson.result.small;
+    const validCategories = categories.filter(category => category.categoryId > 0); // 有効なカテゴリIDを選択
   
-    // ランダムにカテゴリを選択
-    const randomCat = categories[Math.floor(Math.random() * categories.length)];
-    
+    // ランダムに有効なカテゴリを選択
+    const randomCat = validCategories[Math.floor(Math.random() * validCategories.length)];
+  
+    // レシピランキングを取得
     const rankingRes = await fetch(
       `https://app.rakuten.co.jp/services/api/Recipe/CategoryRanking/20170426?applicationId=${APP_ID}&categoryId=${randomCat.categoryId}`
     );
@@ -43,5 +46,5 @@ interface Category {
       title: randomRecipe.recipeTitle,
       url: randomRecipe.recipeUrl,
     };
-  }  
+  }
   
