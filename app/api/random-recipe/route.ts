@@ -1,5 +1,15 @@
-import { NextResponse } from 'next/server';
-
-export async function GET() {
-  return NextResponse.json({ message: 'run' });
-}
+async function getRandomRecipe() {
+    const APP_ID = process.env.RAKUTEN_APP_ID!;
+    const catRes = await fetch(`https://app.rakuten.co.jp/services/api/Recipe/CategoryList/20170426?applicationId=${APP_ID}`);
+    const categories = (await catRes.json()).result.small;
+    const randomCat = categories[Math.floor(Math.random() * categories.length)];
+  
+    const rankingRes = await fetch(`https://app.rakuten.co.jp/services/api/Recipe/CategoryRanking/20170426?applicationId=${APP_ID}&categoryId=${randomCat.categoryId}`);
+    const recipes = (await rankingRes.json()).result;
+    const randomRecipe = recipes[Math.floor(Math.random() * recipes.length)];
+  
+    return {
+      title: randomRecipe.recipeTitle,
+      url: randomRecipe.recipeUrl,
+    };
+  }
