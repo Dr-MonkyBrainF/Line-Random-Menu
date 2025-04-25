@@ -39,7 +39,7 @@ interface Category {
           randomCat = cat; // 有効なカテゴリが見つかった場合、選択
           break;
         }
-      } catch (error) {
+      } catch {
         console.log(`カテゴリID ${cat.categoryId} でエラーが発生しました。スキップします。`);
       }
     }
