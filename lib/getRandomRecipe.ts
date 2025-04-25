@@ -19,7 +19,7 @@ interface Category {
         if (rankingJson.result && rankingJson.result.length > 0) {
           return category; // 有効なカテゴリを返す
         }
-      } catch (error) {
+      } catch {
         console.log(`カテゴリID ${category.categoryId} でエラーが発生しました。`);
       }
       return null; // 無効なカテゴリ
