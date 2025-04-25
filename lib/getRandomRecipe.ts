@@ -5,27 +5,43 @@ interface Category {
     parentCategoryId: string;
   }
   
+  async function getValidCategoryId(categories: Category[]): Promise<Category> {
+    // 有効なIDをランダムに選ぶ
+    const validCategories = categories.filter(category => category.categoryId > 0);
+    return validCategories[Math.floor(Math.random() * validCategories.length)];
+  }
+  
   export default async function getRandomRecipe() {
     const APP_ID = process.env.RAKUTEN_APP_ID!;
     
-    // カテゴリIDを指定して1つだけ取得
-    const categoryId = 619; // ここでは例として「マドレーヌ」カテゴリを指定しています
-    const catRes = await fetch(`https://app.rakuten.co.jp/services/api/Recipe/CategoryRanking/20170426?applicationId=${APP_ID}&categoryId=${categoryId}`);
+    try {
+      const catRes = await fetch(`https://app.rakuten.co.jp/services/api/Recipe/CategoryList/20170426?applicationId=${APP_ID}`);
+      const catJson = await catRes.json();
+      
+      if (!catJson.result || !catJson.result.small || catJson.result.small.length === 0) {
+        throw new Error("カテゴリ取得失敗");
+      }
     
-    const rankingJson = await catRes.json();
-  
-    // レシピが取得できているか確認
-    console.log("レシピレスポンス:", JSON.stringify(rankingJson, null, 2));
-  
-    if (!rankingJson.result || rankingJson.result.length === 0) {
-      throw new Error("レシピが見つかりませんでした");
+      const categories: Category[] = catJson.result.small;
+      const randomCat = await getValidCategoryId(categories);
+    
+      const rankingRes = await fetch(`https://app.rakuten.co.jp/services/api/Recipe/CategoryRanking/20170426?applicationId=${APP_ID}&categoryId=${randomCat.categoryId}`);
+      const rankingJson = await rankingRes.json();
+    
+      if (!rankingJson.result || rankingJson.result.length === 0) {
+        throw new Error("レシピが見つかりませんでした");
+      }
+    
+      const recipes = rankingJson.result;
+      const randomRecipe = recipes[Math.floor(Math.random() * recipes.length)];
+    
+      return {
+        title: randomRecipe.recipeTitle,
+        url: randomRecipe.recipeUrl,
+      };
+    } catch (error) {
+      console.error("エラー:", error);
+      throw error;  // エラーを再スローして呼び出し元で対応可能にする
     }
-  
-    const recipes = rankingJson.result;
-    const randomRecipe = recipes[Math.floor(Math.random() * recipes.length)];
-  
-    return {
-      title: randomRecipe.recipeTitle,
-      url: randomRecipe.recipeUrl,
-    };
   }
+  
